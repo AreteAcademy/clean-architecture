@@ -9,7 +9,9 @@ A API deve permitir a criação de um novo usuário, informando dados básicos c
 * Senha
 
 Critérios de Aceite:
-* Validar Nome e Email
+* Validar Nome, Email E Senha
+* O email precisa ser válido
+* A senha deve conter no mínimo 8 caracteres, 1 letra minúscula, 1 letra maiúscula e 1 caractere especial
 * O usuário deve ser persistido no banco de dados
 * Não permitir emails duplicados
 * Retornar 201 Created
