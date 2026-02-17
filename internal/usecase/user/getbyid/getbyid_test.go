@@ -1,4 +1,4 @@
-package getbyid
+package user
 
 import (
 	"testing"
@@ -28,37 +28,6 @@ func (r *InMemoryUserRepository) GetById(id string) (*domain.User, error) {
 		return nil, nil
 	}
 	return user, nil
-}
-
-type getByIdUserUseCase struct {
-	repo domain.UserRepository
-}
-
-type GetByIdUserUseCase interface {
-	Perform(id string) (*GetByIdOutput, error)
-}
-
-func NewGetByIdUserUseCase(repo domain.UserRepository) GetByIdUserUseCase {
-	return &getByIdUserUseCase{
-		repo: repo,
-	}
-}
-
-func (uc *getByIdUserUseCase) Perform(id string) (*GetByIdOutput, error) {
-	user, err := uc.repo.GetById(id)
-	if err != nil {
-		return nil, domain.ErrUserNotFound
-	}
-
-	if user == nil {
-		return nil, domain.ErrUserNotFound
-	}
-
-	return &GetByIdOutput{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-	}, nil
 }
 
 // SYSTEM UNDER TEST
@@ -117,5 +86,26 @@ func TestGetById_shouldReturnUserSuccess(t *testing.T) {
 
 	if user.Email != "daniel@gmail.com" {
 		t.Errorf("expected name daniel@gmail.com, got %s", user.Email)
+	}
+
+	if user.ID != "123456" {
+		t.Errorf("expected id 123456, got %s", user.ID)
+	}
+}
+
+func TestGetById_shouldReturnAnErrorIfIdEmpty(t *testing.T) {
+	// Arrange
+	sut := makeSut()
+
+	// Act
+	_, err := sut.UseCase.Perform("")
+
+	// Assert
+	if err == nil {
+		t.Fatal("expected an error, not nil")
+	}
+
+	if err != domain.ErrUserIdIsRequired {
+		t.Errorf("expected ErrUserIdIsRequired, got %v", err)
 	}
 }

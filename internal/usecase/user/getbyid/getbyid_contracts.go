@@ -1,4 +1,4 @@
-package getbyid
+package user
 
 type GetByIdOutput struct {
 	ID    string

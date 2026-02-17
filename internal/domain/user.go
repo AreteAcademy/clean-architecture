@@ -13,6 +13,7 @@ var (
 	ErrUserPasswordIsRequired = errors.New("password is required")
 	ErrUserPasswordInvalid    = errors.New("password invalid")
 	ErrUserNotFound           = errors.New("user not found")
+	ErrUserIdIsRequired       = errors.New("id is required")
 )
 
 type User struct {
