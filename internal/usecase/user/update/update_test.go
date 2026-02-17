@@ -207,6 +207,6 @@ func TestUpdatUser_ShouldReturnSuccess(t *testing.T) {
 	}
 
 	if user.Email != "updated@gmail.com" {
-		t.Errorf("expected Email, got %s", user.Email)
+		t.Errorf("expected updated@gmail.com, got %s", user.Email)
 	}
 }
