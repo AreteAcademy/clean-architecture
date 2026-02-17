@@ -26,6 +26,7 @@ type User struct {
 type UserRepository interface {
 	Save(user *User) error
 	GetById(id string) (*User, error)
+	Count() (int, error)
 }
 
 func NewUser(user *User) (*User, error) {

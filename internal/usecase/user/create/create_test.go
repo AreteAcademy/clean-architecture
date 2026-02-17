@@ -4,40 +4,16 @@ import (
 	"testing"
 
 	"github.com/areteacademy/internal/domain"
+	repo "github.com/areteacademy/internal/infra/repository/user"
 )
 
-// INFRA
-type InMemoryUserRepository struct {
-	users map[string]*domain.User
-}
-
-func NewInMemoryUserRepository() *InMemoryUserRepository {
-	return &InMemoryUserRepository{
-		users: make(map[string]*domain.User),
-	}
-}
-
-func (r *InMemoryUserRepository) Save(user *domain.User) error {
-	r.users[user.ID] = user
-	return nil
-}
-
-func (r *InMemoryUserRepository) GetById(id string) (*domain.User, error) {
-	user, exists := r.users[id]
-	if !exists {
-		return nil, nil
-	}
-	return user, nil
-}
-
-// SYSTEM UNDER TEST
 type SUT struct {
 	UseCase CreateUserUseCase
-	Repo    *InMemoryUserRepository
+	Repo    *repo.InMemoryUserRepository
 }
 
 func makeSut() SUT {
-	repo := NewInMemoryUserRepository()
+	repo := repo.NewInMemoryUserRepository()
 	usecase := NewCreateUserUseCase(repo)
 
 	return SUT{
@@ -45,8 +21,6 @@ func makeSut() SUT {
 		Repo:    repo,
 	}
 }
-
-// TEST
 
 func TestCreateUser_ShouldReturnAnErrorIfNameEmpty(t *testing.T) {
 	// Arrange
@@ -203,19 +177,20 @@ func TestCreateUser_ShouldSaveOnSuccess(t *testing.T) {
 	sut := makeSut()
 
 	// Act
-	_, err := sut.UseCase.Perform(&CreateUserInput{
+	_, _ = sut.UseCase.Perform(&CreateUserInput{
 		Name:     "Daniel",
 		Email:    "daniel@gmail.com",
 		Password: "@Danel123",
 	})
 
 	// Assert
+	count, err := sut.Repo.Count()
 	if err != nil {
-		t.Fatalf("expected an error, got nil")
+		t.Fatalf("unexpected error from Count: %v", err)
 	}
 
-	if len(sut.Repo.users) != 1 {
-		t.Errorf("expected user to be saved")
+	if count != 1 {
+		t.Errorf("expected user to be saved, got %d", count)
 	}
 }
 
@@ -231,8 +206,38 @@ func TestCreateUser_shouldNotSaveWhenValidationFails(t *testing.T) {
 	})
 
 	// Assert
-	if len(sut.Repo.users) != 0 {
-		t.Errorf("expected not user to be saved")
+	count, err := sut.Repo.Count()
+	if err != nil {
+		t.Fatalf("unexpected error from Count: %v", err)
 	}
 
+	if count != 0 {
+		t.Errorf("expected user to be saved, got %d", count)
+	}
+}
+
+func TestCreateUser_shouldReturnAnErrorWhenRepositoryFails(t *testing.T) {
+	// Arrange
+	sut := makeSut()
+	sut.Repo.FailOnSave = true
+
+	// Act
+	user, err := sut.UseCase.Perform(&CreateUserInput{
+		Name:     "Daniel",
+		Email:    "daniel@gmail.com",
+		Password: "@Danel123",
+	})
+
+	// Assert
+	if err == nil {
+		t.Fatalf("expected an error, not nil")
+	}
+
+	if err != repo.ErrSimulatedFailureRepoUser {
+		t.Errorf("expected repository erro, got %v", err)
+	}
+
+	if user != nil {
+		t.Errorf("expected nil user, got %+v", user)
+	}
 }

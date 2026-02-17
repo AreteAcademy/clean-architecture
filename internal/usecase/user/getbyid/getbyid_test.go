@@ -4,40 +4,16 @@ import (
 	"testing"
 
 	"github.com/areteacademy/internal/domain"
+	repo "github.com/areteacademy/internal/infra/repository/user"
 )
 
-// INFRA
-type InMemoryUserRepository struct {
-	users map[string]*domain.User
-}
-
-func NewInMemoryUserRepository() *InMemoryUserRepository {
-	return &InMemoryUserRepository{
-		users: make(map[string]*domain.User),
-	}
-}
-
-func (r *InMemoryUserRepository) Save(user *domain.User) error {
-	r.users[user.ID] = user
-	return nil
-}
-
-func (r *InMemoryUserRepository) GetById(id string) (*domain.User, error) {
-	user, exists := r.users[id]
-	if !exists {
-		return nil, nil
-	}
-	return user, nil
-}
-
-// SYSTEM UNDER TEST
 type SUT struct {
 	UseCase GetByIdUserUseCase
-	Repo    *InMemoryUserRepository
+	Repo    *repo.InMemoryUserRepository
 }
 
 func makeSut() SUT {
-	repo := NewInMemoryUserRepository()
+	repo := repo.NewInMemoryUserRepository()
 	usecase := NewGetByIdUserUseCase(repo)
 
 	return SUT{
@@ -66,11 +42,11 @@ func TestGetById_shouldReturnAnErrorIfNotFound(t *testing.T) {
 func TestGetById_shouldReturnUserSuccess(t *testing.T) {
 	// Arrange
 	sut := makeSut()
-	sut.Repo.users["123456"] = &domain.User{
+	sut.Repo.Save(&domain.User{
 		ID:    "123456",
 		Name:  "Daniel",
 		Email: "daniel@gmail.com",
-	}
+	})
 
 	// Act
 	user, err := sut.UseCase.Perform("123456")
@@ -107,5 +83,32 @@ func TestGetById_shouldReturnAnErrorIfIdEmpty(t *testing.T) {
 
 	if err != domain.ErrUserIdIsRequired {
 		t.Errorf("expected ErrUserIdIsRequired, got %v", err)
+	}
+}
+
+func TestGetById_shouldReturnErrorWhenRepositoryFail(t *testing.T) {
+	// Arrange
+	sut := makeSut()
+	sut.Repo.Save(&domain.User{
+		ID:    "123456",
+		Name:  "Daniel",
+		Email: "daniel@gmail.com",
+	})
+	sut.Repo.FailOnGet = true
+
+	// Act
+	user, err := sut.UseCase.Perform("123456")
+
+	// Assert
+	if err == nil {
+		t.Fatalf("expected an error, not nil")
+	}
+
+	if err != repo.ErrSimulatedFailureRepoUser {
+		t.Errorf("expected repository erro, got %v", err)
+	}
+
+	if user != nil {
+		t.Errorf("expected nil user, got %+v", user)
 	}
 }
