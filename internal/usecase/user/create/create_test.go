@@ -8,18 +8,26 @@ import (
 
 // INFRA
 type InMemoryUserRepository struct {
-	users []*domain.User
+	users map[string]*domain.User
 }
 
 func NewInMemoryUserRepository() *InMemoryUserRepository {
 	return &InMemoryUserRepository{
-		users: []*domain.User{},
+		users: make(map[string]*domain.User),
 	}
 }
 
 func (r *InMemoryUserRepository) Save(user *domain.User) error {
-	r.users = append(r.users, user)
+	r.users[user.ID] = user
 	return nil
+}
+
+func (r *InMemoryUserRepository) GetById(id string) (*domain.User, error) {
+	user, exists := r.users[id]
+	if !exists {
+		return nil, nil
+	}
+	return user, nil
 }
 
 // SYSTEM UNDER TEST
@@ -190,7 +198,7 @@ func TestCreateUser_ShouldReturnSuccess(t *testing.T) {
 	}
 }
 
-func TestCreateUser_ShoukdSaveOnSuccess(t *testing.T) {
+func TestCreateUser_ShouldSaveOnSuccess(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 
@@ -209,4 +217,22 @@ func TestCreateUser_ShoukdSaveOnSuccess(t *testing.T) {
 	if len(sut.Repo.users) != 1 {
 		t.Errorf("expected user to be saved")
 	}
+}
+
+func TestCreateUser_shouldNotSaveWhenValidationFails(t *testing.T) {
+	// Arrange
+	sut := makeSut()
+
+	// Act
+	_, _ = sut.UseCase.Perform(&CreateUserInput{
+		Name:     "",
+		Email:    "daniel@gmail.com",
+		Password: "@Danel123",
+	})
+
+	// Assert
+	if len(sut.Repo.users) != 0 {
+		t.Errorf("expected not user to be saved")
+	}
+
 }

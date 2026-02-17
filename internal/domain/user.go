@@ -1,6 +1,10 @@
 package domain
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/google/uuid"
+)
 
 var (
 	ErrUserNameIsRequired     = errors.New("name is required")
@@ -8,9 +12,11 @@ var (
 	ErrUserEmailInvalid       = errors.New("email invalid")
 	ErrUserPasswordIsRequired = errors.New("password is required")
 	ErrUserPasswordInvalid    = errors.New("password invalid")
+	ErrUserNotFound           = errors.New("user not found")
 )
 
 type User struct {
+	ID       string
 	Name     string
 	Email    string
 	Password string
@@ -18,6 +24,7 @@ type User struct {
 
 type UserRepository interface {
 	Save(user *User) error
+	GetById(id string) (*User, error)
 }
 
 func NewUser(user *User) (*User, error) {
@@ -41,5 +48,10 @@ func NewUser(user *User) (*User, error) {
 		return nil, ErrUserPasswordInvalid
 	}
 
-	return user, nil
+	return &User{
+		ID:       uuid.NewString(),
+		Name:     user.Name,
+		Email:    user.Email,
+		Password: user.Password,
+	}, nil
 }
