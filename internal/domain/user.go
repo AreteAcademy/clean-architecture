@@ -25,6 +25,7 @@ type User struct {
 
 type UserRepository interface {
 	Save(user *User) error
+	Update(user *User) error
 	GetById(id string) (*User, error)
 	Count() (int, error)
 }
@@ -55,5 +56,29 @@ func NewUser(user *User) (*User, error) {
 		Name:     user.Name,
 		Email:    user.Email,
 		Password: user.Password,
+	}, nil
+}
+
+func Update(id, name, email string) (*User, error) {
+	if id == "" {
+		return nil, ErrUserIdIsRequired
+	}
+
+	if name == "" {
+		return nil, ErrUserNameIsRequired
+	}
+
+	if email == "" {
+		return nil, ErrUserEmailIsRequired
+	}
+
+	if !isValidEmail(email) {
+		return nil, ErrUserEmailInvalid
+	}
+
+	return &User{
+		ID:    id,
+		Name:  name,
+		Email: email,
 	}, nil
 }

@@ -9,10 +9,11 @@ import (
 var ErrSimulatedFailureRepoUser = errors.New("database error")
 
 type InMemoryUserRepository struct {
-	FailOnSave  bool
-	FailOnGet   bool
-	FailOnCount bool
-	users       map[string]*domain.User
+	FailOnSave   bool
+	FailOnUpdate bool
+	FailOnGet    bool
+	FailOnCount  bool
+	users        map[string]*domain.User
 }
 
 func NewInMemoryUserRepository() *InMemoryUserRepository {
@@ -23,6 +24,14 @@ func NewInMemoryUserRepository() *InMemoryUserRepository {
 
 func (r *InMemoryUserRepository) Save(user *domain.User) error {
 	if r.FailOnSave {
+		return ErrSimulatedFailureRepoUser
+	}
+	r.users[user.ID] = user
+	return nil
+}
+
+func (r *InMemoryUserRepository) Update(user *domain.User) error {
+	if r.FailOnUpdate {
 		return ErrSimulatedFailureRepoUser
 	}
 	r.users[user.ID] = user
