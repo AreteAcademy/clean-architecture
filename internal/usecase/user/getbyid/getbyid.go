@@ -31,8 +31,10 @@ func (uc *getByIdUserUseCase) Perform(id string) (*GetByIdOutput, error) {
 	}
 
 	return &GetByIdOutput{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}, nil
 }

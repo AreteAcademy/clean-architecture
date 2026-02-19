@@ -2,6 +2,7 @@ package user
 
 import (
 	"testing"
+	"time"
 
 	"github.com/areteacademy/internal/domain"
 	repo "github.com/areteacademy/internal/infra/repository/user"
@@ -42,10 +43,13 @@ func TestGetById_shouldReturnAnErrorIfNotFound(t *testing.T) {
 func TestGetById_shouldReturnUserSuccess(t *testing.T) {
 	// Arrange
 	sut := makeSut()
+	now := time.Now()
 	sut.Repo.Save(&domain.User{
-		ID:    "123456",
-		Name:  "Daniel",
-		Email: "daniel@gmail.com",
+		ID:        "123456",
+		Name:      "Daniel",
+		Email:     "daniel@gmail.com",
+		CreatedAt: now,
+		UpdatedAt: now,
 	})
 
 	// Act
@@ -66,6 +70,14 @@ func TestGetById_shouldReturnUserSuccess(t *testing.T) {
 
 	if user.ID != "123456" {
 		t.Errorf("expected id 123456, got %s", user.ID)
+	}
+
+	if user.CreatedAt.IsZero() {
+		t.Fatalf("expected CreatedAt to be set")
+	}
+
+	if user.UpdatedAt.IsZero() {
+		t.Fatalf("expected UpdatedAt to be set")
 	}
 }
 

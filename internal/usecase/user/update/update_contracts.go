@@ -1,5 +1,7 @@
 package user
 
+import "time"
+
 type UpdateUserInput struct {
 	ID    string
 	Name  string
@@ -7,7 +9,9 @@ type UpdateUserInput struct {
 }
 
 type UpdateUserOutput struct {
-	ID    string
-	Name  string
-	Email string
+	ID        string
+	Name      string
+	Email     string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

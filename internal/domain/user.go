@@ -2,6 +2,7 @@ package domain
 
 import (
 	"errors"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -17,10 +18,12 @@ var (
 )
 
 type User struct {
-	ID       string
-	Name     string
-	Email    string
-	Password string
+	ID        string
+	Name      string
+	Email     string
+	Password  string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type UserRepository interface {
@@ -30,32 +33,36 @@ type UserRepository interface {
 	Count() (int, error)
 }
 
-func NewUser(user *User) (*User, error) {
-	if user.Name == "" {
+func NewUser(name, email, password string) (*User, error) {
+	if name == "" {
 		return nil, ErrUserNameIsRequired
 	}
 
-	if user.Email == "" {
+	if email == "" {
 		return nil, ErrUserEmailIsRequired
 	}
 
-	if !isValidEmail(user.Email) {
+	if !isValidEmail(email) {
 		return nil, ErrUserEmailInvalid
 	}
 
-	if user.Password == "" {
+	if password == "" {
 		return nil, ErrUserPasswordIsRequired
 	}
 
-	if !isValidPassword(user.Password) {
+	if !isValidPassword(password) {
 		return nil, ErrUserPasswordInvalid
 	}
 
+	now := time.Now()
+
 	return &User{
-		ID:       uuid.NewString(),
-		Name:     user.Name,
-		Email:    user.Email,
-		Password: user.Password,
+		ID:        uuid.NewString(),
+		Name:      name,
+		Email:     email,
+		Password:  password,
+		CreatedAt: now,
+		UpdatedAt: now,
 	}, nil
 }
 
@@ -77,8 +84,9 @@ func Update(id, name, email string) (*User, error) {
 	}
 
 	return &User{
-		ID:    id,
-		Name:  name,
-		Email: email,
+		ID:        id,
+		Name:      name,
+		Email:     email,
+		UpdatedAt: time.Now(),
 	}, nil
 }

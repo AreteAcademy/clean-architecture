@@ -170,6 +170,18 @@ func TestCreateUser_ShouldReturnSuccess(t *testing.T) {
 	if user.Name != "Daniel" || user.Email != "daniel@gmail.com" {
 		t.Errorf("expected nil user return comform, got %+v", user)
 	}
+
+	if user.CreatedAt.IsZero() {
+		t.Fatalf("expected CreatedAt to be set")
+	}
+
+	if user.UpdatedAt.IsZero() {
+		t.Fatalf("expected UpdatedAt to be set")
+	}
+
+	if !user.CreatedAt.Equal(user.UpdatedAt) {
+		t.Fatalf("expected CreatedAt and UpdatedAt to be equal on creation")
+	}
 }
 
 func TestCreateUser_ShouldSaveOnSuccess(t *testing.T) {

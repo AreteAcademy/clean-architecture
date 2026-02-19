@@ -17,11 +17,11 @@ func NewCreateUserUseCase(repo domain.UserRepository) CreateUserUseCase {
 }
 
 func (uc *createUserUseCase) Perform(input *CreateUserInput) (*CreateUserOutput, error) {
-	user, err := domain.NewUser(&domain.User{
-		Name:     input.Name,
-		Email:    input.Email,
-		Password: input.Password,
-	})
+	user, err := domain.NewUser(
+		input.Name,
+		input.Email,
+		input.Password,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +31,10 @@ func (uc *createUserUseCase) Perform(input *CreateUserInput) (*CreateUserOutput,
 	}
 
 	return &CreateUserOutput{
-		Name:  user.Name,
-		Email: user.Email,
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}, nil
 }

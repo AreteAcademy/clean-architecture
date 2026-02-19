@@ -2,6 +2,7 @@ package user
 
 import (
 	"testing"
+	"time"
 
 	"github.com/areteacademy/internal/domain"
 	repo "github.com/areteacademy/internal/infra/repository/user"
@@ -185,10 +186,13 @@ func TestUpdateUser_ShouldReturnError_WhenRepositoryFailOnUpdate(t *testing.T) {
 func TestUpdatUser_ShouldReturnSuccess(t *testing.T) {
 	// Arrange
 	sut := makeSut()
+	now := time.Now()
 	sut.Repo.Save(&domain.User{
-		ID:    "123",
-		Name:  "Daniel",
-		Email: "daniel@gmail.com",
+		ID:        "123",
+		Name:      "Daniel",
+		Email:     "daniel@gmail.com",
+		CreatedAt: now,
+		UpdatedAt: now,
 	})
 
 	// Act
@@ -208,5 +212,13 @@ func TestUpdatUser_ShouldReturnSuccess(t *testing.T) {
 
 	if user.Email != "updated@gmail.com" {
 		t.Errorf("expected updated@gmail.com, got %s", user.Email)
+	}
+
+	if !user.CreatedAt.Equal(now) {
+		t.Fatalf("expected CreatedAt to remain unchanged")
+	}
+
+	if !user.UpdatedAt.After(now) {
+		t.Fatalf("expected UpdatedAt to be greater than original time")
 	}
 }

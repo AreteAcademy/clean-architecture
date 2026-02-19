@@ -40,8 +40,10 @@ func (uc *updateUserUseCase) Perform(input UpdateUserInput) (*UpdateUserOutput, 
 	}
 
 	return &UpdateUserOutput{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
+		ID:        user.ID,
+		Name:      user.Name,
+		Email:     user.Email,
+		CreatedAt: exists.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}, nil
 }
