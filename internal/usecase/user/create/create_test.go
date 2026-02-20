@@ -47,7 +47,7 @@ func TestCreateUser_ShouldReturnAnErrorIfNameEmpty(t *testing.T) {
 	}
 }
 
-func TestCreateUser_ShouldReturnAnErrorIfEmailEmpty(t *testing.T) {
+func TestCreateUser_ShouldReturnAnError_WhenIfEmailEmpty(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 
@@ -72,7 +72,7 @@ func TestCreateUser_ShouldReturnAnErrorIfEmailEmpty(t *testing.T) {
 	}
 }
 
-func TestCreateUser_ShouldReturnAnErrorIfEmailInvalid(t *testing.T) {
+func TestCreateUser_ShouldReturnAnError_WhenIfEmailInvalid(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 
@@ -97,7 +97,7 @@ func TestCreateUser_ShouldReturnAnErrorIfEmailInvalid(t *testing.T) {
 	}
 }
 
-func TestCreateUser_ShouldReturnAnErrorIfPasswordEmpty(t *testing.T) {
+func TestCreateUser_ShouldReturnAnError_WhenIfPasswordEmpty(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 
@@ -122,7 +122,7 @@ func TestCreateUser_ShouldReturnAnErrorIfPasswordEmpty(t *testing.T) {
 	}
 }
 
-func TestCreateUser_ShouldReturnAnErrorIfPasswordInvalid(t *testing.T) {
+func TestCreateUser_ShouldReturnAnError_WhenIfPasswordInvalid(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 
@@ -206,7 +206,7 @@ func TestCreateUser_ShouldSaveOnSuccess(t *testing.T) {
 	}
 }
 
-func TestCreateUser_shouldNotSaveWhenValidationFails(t *testing.T) {
+func TestCreateUser_shouldReturnAnError_WhenValidationFails(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 
@@ -228,7 +228,7 @@ func TestCreateUser_shouldNotSaveWhenValidationFails(t *testing.T) {
 	}
 }
 
-func TestCreateUser_shouldReturnAnErrorWhenRepositoryFails(t *testing.T) {
+func TestCreateUser_shouldReturnAnError_WhenRepositoryFails(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 	sut.Repo.FailOnSave = true
