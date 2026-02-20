@@ -11,6 +11,9 @@ A API deve retornar uma lista de categorias cadastradas.
 Endpoint: POST */category*
 
 A API deve permitir a criação de uma nova categoria.
+* Nome
+* Status
+* Usuário
 
 Regras:
 * Deve exigir autenticação
