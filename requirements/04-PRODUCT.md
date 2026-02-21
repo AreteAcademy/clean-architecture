@@ -11,11 +11,15 @@ A API deve retornar uma lista de produtos cadastrados.
 Endpoint: POST */product*
 
 A API deve permitir a criação de um produto associado a uma categoria.
-Nome
-Descriçåo
-Preço
-Status
-Categoria
+* Nome
+* Descriçåo
+* Preço
+* Status
+* Categoria
+
+Regras:
+* Deve exigir autenticação
+* Nome da produto deve ser obrigatório
 
 ## RF-PROD-03 — Buscar Produto por ID
 

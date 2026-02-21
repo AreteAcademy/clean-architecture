@@ -1,12 +1,6 @@
 # 🗂 Category
 
-## RF-CAT-01 — Listar Categorias
-
-Endpoint: GET */category*
-
-A API deve retornar uma lista de categorias cadastradas.
-
-## RF-CAT-02 — Criar Categoria
+## RF-CAT-01 — Criar Categoria
 
 Endpoint: POST */category*
 
@@ -16,8 +10,16 @@ A API deve permitir a criação de uma nova categoria.
 * Usuário
 
 Regras:
+* Deve validar se o usuário existe
+* Deve aceitar somente status *ACTIVE* e *INACTIVE*
 * Deve exigir autenticação
 * Nome da categoria deve ser obrigatório
+
+## RF-CAT-02 — Listar Categorias
+
+Endpoint: GET */category*
+
+A API deve retornar uma lista de categorias cadastradas.
 
 ## RF-CAT-03 — Buscar Categoria por ID
 
