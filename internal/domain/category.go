@@ -13,6 +13,9 @@ var (
 	ErrCategoryStatusIsRequired = errors.New("status is required")
 	ErrCategoryStatusInvalid    = errors.New("status invalid")
 	ErrCategoryUserNotFound     = errors.New("user not found")
+	ErrCategoryIdIsRequired     = errors.New("id is required")
+	ErrCategoryNotFound         = errors.New("category not found")
+	ErrCategoryUserNotOwner     = errors.New("user not owner")
 )
 
 type CategoryStatus string

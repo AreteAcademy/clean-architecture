@@ -269,6 +269,10 @@ func TestCreateCategory_ShouldReturnSuccess(t *testing.T) {
 		t.Fatalf("expected ID to be set")
 	}
 
+	if category.UserId == "" {
+		t.Fatalf("expected UserId to be set")
+	}
+
 	if category.Name != "Categoria Daniel" {
 		t.Errorf("expected Category Name, got %v", category.Name)
 	}
