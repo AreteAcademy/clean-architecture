@@ -12,6 +12,7 @@ type InMemoryCategoryRepository struct {
 	FailOnSave   bool
 	FailOnUpdate bool
 	FailOnGet    bool
+	FailOnList   bool
 	FailOnCount  bool
 	categories   map[string]*domain.Category
 }
@@ -47,6 +48,21 @@ func (r *InMemoryCategoryRepository) GetById(id string) (*domain.Category, error
 		return nil, nil
 	}
 	return category, nil
+}
+
+func (r *InMemoryCategoryRepository) ListByUserId(userId string) ([]*domain.Category, error) {
+	if r.FailOnList {
+		return nil, ErrSimulatedFailureRepoCategory
+	}
+
+	var categories []*domain.Category
+	for _, c := range r.categories {
+		if c.UserId == userId {
+			categories = append(categories, c)
+		}
+	}
+
+	return categories, nil
 }
 
 func (r *InMemoryCategoryRepository) Count() (int, error) {

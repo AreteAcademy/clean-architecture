@@ -27,7 +27,7 @@ func makeSut() SUT {
 	}
 }
 
-func TestCreateCategory_ShouldReturnAnError_WhenIdEmpty(t *testing.T) {
+func TestGetByIdCategory_ShouldReturnAnError_WhenIdEmpty(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 
@@ -51,7 +51,7 @@ func TestCreateCategory_ShouldReturnAnError_WhenIdEmpty(t *testing.T) {
 	}
 }
 
-func TestCreateCategory_ShouldReturnAnError_WhenUserIdEmpty(t *testing.T) {
+func TestGetByIdCategory_ShouldReturnAnError_WhenUserIdEmpty(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 
@@ -75,7 +75,7 @@ func TestCreateCategory_ShouldReturnAnError_WhenUserIdEmpty(t *testing.T) {
 	}
 }
 
-func TestCreateCategory_ShouldReturnAnError_WhenUserNotFound(t *testing.T) {
+func TestGetByIdCategory_ShouldReturnAnError_WhenUserNotFound(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 	now := time.Now()
@@ -107,7 +107,7 @@ func TestCreateCategory_ShouldReturnAnError_WhenUserNotFound(t *testing.T) {
 	}
 }
 
-func TestCreateCategory_ShouldReturnAnError_WhenCategoryNotFound(t *testing.T) {
+func TestGetByIdCategory_ShouldReturnAnError_WhenCategoryNotFound(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 	now := time.Now()
@@ -148,7 +148,7 @@ func TestCreateCategory_ShouldReturnAnError_WhenCategoryNotFound(t *testing.T) {
 	}
 }
 
-func TestCreateCategory_ShouldReturnAnError_WhenUserRepoFailOnGetById(t *testing.T) {
+func TestGetByIdCategory_ShouldReturnAnError_WhenUserRepoFailOnGetById(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 	now := time.Now()
@@ -181,7 +181,7 @@ func TestCreateCategory_ShouldReturnAnError_WhenUserRepoFailOnGetById(t *testing
 	}
 }
 
-func TestCreateCategory_ShouldReturnAnError_WhenCategoryRepoFailOnGetById(t *testing.T) {
+func TestGetByIdCategory_ShouldReturnAnError_WhenCategoryRepoFailOnGetById(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 	now := time.Now()
@@ -223,7 +223,7 @@ func TestCreateCategory_ShouldReturnAnError_WhenCategoryRepoFailOnGetById(t *tes
 	}
 }
 
-func TestCreateCategory_ShouldReturnAnError_WhenCategoryNotOwner(t *testing.T) {
+func TestGetByIdCategory_ShouldReturnAnError_WhenCategoryNotOwner(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 	now := time.Now()
@@ -272,7 +272,7 @@ func TestCreateCategory_ShouldReturnAnError_WhenCategoryNotOwner(t *testing.T) {
 	}
 }
 
-func TestCreateCategory_ShouldReturnSuccess(t *testing.T) {
+func TestGetByIdCategory_ShouldReturnSuccess(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 	now := time.Now()
