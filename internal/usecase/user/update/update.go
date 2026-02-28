@@ -17,7 +17,7 @@ func NewUpdateUserUseCase(repo domain.UserRepository) UpdateUserUseCase {
 }
 
 func (uc *updateUserUseCase) Perform(input UpdateUserInput) (*UpdateUserOutput, error) {
-	user, err := domain.Update(
+	user, err := domain.UpdateUser(
 		input.ID,
 		input.Name,
 		input.Email,

@@ -74,3 +74,35 @@ func NewCategory(userId string, name string, status CategoryStatus) (*Category, 
 		UpdatedAt: now,
 	}, nil
 }
+
+func UpdateCategory(id, userId, name string, status CategoryStatus) (*Category, error) {
+	if id == "" {
+		return nil, ErrCategoryIdIsRequired
+	}
+
+	if userId == "" {
+		return nil, ErrCategoryUserIdIsRequired
+	}
+
+	if name == "" {
+		return nil, ErrCategoryNameIsRequired
+	}
+
+	if status == "" {
+		return nil, ErrCategoryStatusIsRequired
+	}
+
+	if !isValidCategoryStatus(status) {
+		return nil, ErrCategoryStatusInvalid
+	}
+
+	now := time.Now()
+
+	return &Category{
+		ID:        uuid.NewString(),
+		UserId:    userId,
+		Name:      name,
+		Status:    string(status),
+		UpdatedAt: now,
+	}, nil
+}

@@ -66,7 +66,7 @@ func NewUser(name, email, password string) (*User, error) {
 	}, nil
 }
 
-func Update(id, name, email string) (*User, error) {
+func UpdateUser(id, name, email string) (*User, error) {
 	if id == "" {
 		return nil, ErrUserIdIsRequired
 	}
