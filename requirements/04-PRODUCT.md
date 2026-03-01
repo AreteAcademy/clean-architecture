@@ -1,25 +1,32 @@
 # 📦 Product
 
-## RF-PROD-01 — Listar Produtos
-
-Endpoint: GET */product*
-
-A API deve retornar uma lista de produtos cadastrados.
-
-## RF-PROD-02 — Criar Produto
+## RF-PROD-01 — Criar Produto
 
 Endpoint: POST */product*
 
-A API deve permitir a criação de um produto associado a uma categoria.
+A API deve permitir a criação de um produto associado a uma categoria e usuário.
 * Nome
 * Descriçåo
 * Preço
 * Status
 * Categoria
+* Usuário
 
 Regras:
+* Nome do produto deve ser obrigatório
+* Descriçåo do produto deve ser obrigatório
+* Preço do produto deve ser obrigatório
+* Status do produto deve ser obrigatório
+* Deve aceitar somente status *ACTIVE* e *INACTIVE*
+* Categoria deve ser obrigatório
+* Usuário deve ser obrigatório
 * Deve exigir autenticação
-* Nome da produto deve ser obrigatório
+
+## RF-PROD-02 — Listar Produtos
+
+Endpoint: GET */product*
+
+A API deve retornar uma lista de produtos cadastrados.
 
 ## RF-PROD-03 — Buscar Produto por ID
 

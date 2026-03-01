@@ -12,8 +12,8 @@ A API deve permitir a criação de uma nova categoria.
 Regras:
 * Deve validar se o usuário existe
 * Deve aceitar somente status *ACTIVE* e *INACTIVE*
-* Deve exigir autenticação
 * Nome da categoria deve ser obrigatório
+* Deve exigir autenticação
 
 ## RF-CAT-02 — Listar Categorias
 
