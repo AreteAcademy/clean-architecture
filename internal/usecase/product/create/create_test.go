@@ -10,7 +10,7 @@ import (
 )
 
 type SUT struct {
-	UseCase      CreateCategoryUseCase
+	UseCase      CreateProductUseCase
 	ProductRepo  *productRepo.InMemoryProductRepository
 	CategoryRepo *categoryRepo.InMemoryCategoryRepository
 	UserRepo     *userRepo.InMemoryUserRepository
@@ -30,17 +30,18 @@ func makeSut() SUT {
 	}
 }
 
-func TestCreateProduct_ShouldReturnAnError_WhenCategoryIdEmpty(t *testing.T) {
+func TestCreateProduct_ShouldReturnAnError_WhenUserIdEmpty(t *testing.T) {
 	// Arrange
 	sut := makeSut()
 
 	// Act
 	product, err := sut.UseCase.Perform(CreateProductInput{
-		CategoryId: "",
-		UserId:     "123456",
-		Name:       "Minha categoria",
-		Status:     "ACTIVE",
-		Price:      100,
+		UserId:      "",
+		CategoryId:  "123456",
+		Name:        "Produto1",
+		Description: "Meu produto",
+		Status:      "ACTIVE",
+		Price:       100,
 	})
 
 	// Assert
@@ -48,8 +49,8 @@ func TestCreateProduct_ShouldReturnAnError_WhenCategoryIdEmpty(t *testing.T) {
 		t.Fatalf("expected an error, got nil")
 	}
 
-	if err != domain.ErrProductCategoryIdIsRequired {
-		t.Errorf("expected ErrProductCategoryIdIsRequired, got %v", err)
+	if err != domain.ErrProductUserIdIsRequired {
+		t.Errorf("expected ErrProductUserIdIsRequired, got %v", err)
 	}
 
 	if product != nil {

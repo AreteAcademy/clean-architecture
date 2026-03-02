@@ -8,7 +8,7 @@ type createProductUseCase struct {
 	userRepo     domain.UserRepository
 }
 
-type CreateCategoryUseCase interface {
+type CreateProductUseCase interface {
 	Perform(input CreateProductInput) (*CreateProductOutput, error)
 }
 
@@ -16,16 +16,17 @@ func NewCreateProductUseCase(
 	productRepo domain.ProductRepository,
 	categoryRepo domain.CategoryRepository,
 	userRepo domain.UserRepository,
-) CreateCategoryUseCase {
+) CreateProductUseCase {
 	return &createProductUseCase{
+		productRepo:  productRepo,
 		categoryRepo: categoryRepo,
 		userRepo:     userRepo,
 	}
 }
 
 func (uc *createProductUseCase) Perform(input CreateProductInput) (*CreateProductOutput, error) {
-	if input.CategoryId == "" {
-		return nil, domain.ErrProductCategoryIdIsRequired
+	if input.UserId == "" {
+		return nil, domain.ErrProductUserIdIsRequired
 	}
 
 	return nil, nil

@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	ErrProductCategoryIdIsRequired = errors.New("category id is required")
+	ErrProductUserIdIsRequired = errors.New("user id is required")
 )
 
 type Product struct {
@@ -14,9 +14,9 @@ type Product struct {
 	UserId      string
 	CategoryId  string
 	Name        string
-	Price       int
 	Description string
 	Status      string
+	Price       int
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
