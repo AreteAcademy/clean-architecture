@@ -9,12 +9,13 @@ import (
 var ErrSimulatedFailureRepoProduct = errors.New("database error")
 
 type InMemoryProductRepository struct {
-	FailOnSave   bool
-	FailOnUpdate bool
-	FailOnGet    bool
-	FailOnList   bool
-	FailOnCount  bool
-	producties   map[string]*domain.Product
+	FailOnSave             bool
+	FailOnUpdate           bool
+	FailOnGetById          bool
+	FailOnGetByIdAndUserId bool
+	FailOnList             bool
+	FailOnCount            bool
+	producties             map[string]*domain.Product
 }
 
 func NewInMemoryProductRepository() *InMemoryProductRepository {
@@ -40,7 +41,7 @@ func (r *InMemoryProductRepository) Update(product *domain.Product) error {
 }
 
 func (r *InMemoryProductRepository) GetById(id string) (*domain.Product, error) {
-	if r.FailOnGet {
+	if r.FailOnGetById {
 		return nil, ErrSimulatedFailureRepoProduct
 	}
 	product, exists := r.producties[id]
@@ -48,6 +49,20 @@ func (r *InMemoryProductRepository) GetById(id string) (*domain.Product, error) 
 		return nil, nil
 	}
 	return product, nil
+}
+
+func (r *InMemoryProductRepository) GetByIdAndUserId(id, userId string) (*domain.Product, error) {
+	if r.FailOnGetByIdAndUserId {
+		return nil, ErrSimulatedFailureRepoProduct
+	}
+
+	for _, c := range r.producties {
+		if c.UserId == userId && c.ID == id {
+			return c, nil
+		}
+	}
+
+	return nil, nil
 }
 
 func (r *InMemoryProductRepository) ListByUserId(userId string) ([]*domain.Product, error) {

@@ -8,6 +8,9 @@ import (
 )
 
 var (
+	ErrProductIdIsRequired          = errors.New("id is required")
+	ErrProductNotFound              = errors.New("product not found")
+	ErrProductUserNotOwner          = errors.New("user not owner")
 	ErrProductUserIdIsRequired      = errors.New("user id is required")
 	ErrProductCategoryIdIsRequired  = errors.New("category id is required")
 	ErrProductNameIsRequired        = errors.New("name is required")
@@ -36,6 +39,7 @@ type ProductRepository interface {
 	Save(product *Product) error
 	Update(product *Product) error
 	GetById(id string) (*Product, error)
+	GetByIdAndUserId(id, userId string) (*Product, error)
 	ListByUserId(userId string) ([]*Product, error)
 	Count() (int, error)
 }
