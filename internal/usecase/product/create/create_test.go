@@ -4,6 +4,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/areteacademy/internal/domain"
 	categoryRepo "github.com/areteacademy/internal/infra/repository/category"
 	productRepo "github.com/areteacademy/internal/infra/repository/product"
@@ -142,17 +145,11 @@ func TestCreateProduct_ShouldReturnAnError_WhenInputValidators(t *testing.T) {
 	// Assert
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			category, err := sut.UseCase.Perform(tc.input)
+			product, err := sut.UseCase.Perform(tc.input)
 
-			if err == nil && tc.expectedErr != nil {
-				t.Errorf("expected error %v, got nil", tc.expectedErr)
-			} else if err != nil && err != tc.expectedErr {
-				t.Errorf("expected error %v, got %v", tc.expectedErr, err)
-			}
-
-			if category != nil {
-				t.Errorf("expected nil category, got %+v", category)
-			}
+			require.Error(t, err)
+			require.Nil(t, product)
+			assert.ErrorIs(t, err, tc.expectedErr)
 		})
 	}
 }
@@ -189,17 +186,9 @@ func TestCreateProduct_ShouldReturnAnError_WhenUserNotFound(t *testing.T) {
 	})
 
 	// Assert
-	if err == nil {
-		t.Fatalf("expected an error, got nil")
-	}
-
-	if err != domain.ErrProductUserNotFound {
-		t.Errorf("expected ErrProductUserNotFound, got %v", err)
-	}
-
-	if product != nil {
-		t.Errorf("expected nil product, got %+v", product)
-	}
+	require.Error(t, err)
+	require.Nil(t, product)
+	assert.ErrorIs(t, err, domain.ErrProductUserNotFound)
 }
 
 func TestCreateProduct_ShouldReturnAnError_WhenUserRepoFailOnGetById(t *testing.T) {
@@ -235,17 +224,9 @@ func TestCreateProduct_ShouldReturnAnError_WhenUserRepoFailOnGetById(t *testing.
 	})
 
 	// Assert
-	if err == nil {
-		t.Fatalf("expected an error, got nil")
-	}
-
-	if err != userRepo.ErrSimulatedFailureRepoUser {
-		t.Errorf("expected ErrSimulatedFailureRepoUser, got %v", err)
-	}
-
-	if product != nil {
-		t.Errorf("expected nil product, got %+v", product)
-	}
+	require.Error(t, err)
+	require.Nil(t, product)
+	assert.ErrorIs(t, err, userRepo.ErrSimulatedFailureRepoUser)
 }
 
 func TestCreateProduct_ShouldReturnAnError_WhenCategoryNotFound(t *testing.T) {
@@ -280,17 +261,9 @@ func TestCreateProduct_ShouldReturnAnError_WhenCategoryNotFound(t *testing.T) {
 	})
 
 	// Assert
-	if err == nil {
-		t.Fatalf("expected an error, got nil")
-	}
-
-	if err != domain.ErrProductCategoryNotFound {
-		t.Errorf("expected ErrProductCategoryNotFound, got %v", err)
-	}
-
-	if product != nil {
-		t.Errorf("expected nil product, got %+v", product)
-	}
+	require.Error(t, err)
+	require.Nil(t, product)
+	assert.ErrorIs(t, err, domain.ErrProductCategoryNotFound)
 }
 
 func TestCreateProduct_ShouldReturnAnError_WhenCategoryRepoFailOnGetById(t *testing.T) {
@@ -326,17 +299,9 @@ func TestCreateProduct_ShouldReturnAnError_WhenCategoryRepoFailOnGetById(t *test
 	})
 
 	// Assert
-	if err == nil {
-		t.Fatalf("expected an error, got nil")
-	}
-
-	if err != categoryRepo.ErrSimulatedFailureRepoCategory {
-		t.Errorf("expected ErrSimulatedFailureRepoCategory, got %v", err)
-	}
-
-	if product != nil {
-		t.Errorf("expected nil product, got %+v", product)
-	}
+	require.Error(t, err)
+	require.Nil(t, product)
+	assert.ErrorIs(t, err, categoryRepo.ErrSimulatedFailureRepoCategory)
 }
 
 func TestCreateProduct_ShouldReturnAnError_WhenCategoryUserNotOwner(t *testing.T) {
@@ -386,17 +351,9 @@ func TestCreateProduct_ShouldReturnAnError_WhenCategoryUserNotOwner(t *testing.T
 	})
 
 	// Assert
-	if err == nil {
-		t.Fatalf("expected an error, got nil")
-	}
-
-	if err != domain.ErrProductCategoryUserNotOwner {
-		t.Errorf("expected ErrProductCategoryUserNotOwner, got %v", err)
-	}
-
-	if product != nil {
-		t.Errorf("expected nil product, got %+v", product)
-	}
+	require.Error(t, err)
+	require.Nil(t, product)
+	assert.ErrorIs(t, err, domain.ErrProductCategoryUserNotOwner)
 }
 
 func TestCreateProduct_ShouldReturnAnError_WhenProductRepoFailOnSave(t *testing.T) {
@@ -433,17 +390,9 @@ func TestCreateProduct_ShouldReturnAnError_WhenProductRepoFailOnSave(t *testing.
 	})
 
 	// Assert
-	if err == nil {
-		t.Fatalf("expected an error, got nil")
-	}
-
-	if err != productRepo.ErrSimulatedFailureRepoProduct {
-		t.Errorf("expected ErrSimulatedFailureRepoProduct, got %v", err)
-	}
-
-	if product != nil {
-		t.Errorf("expected nil product, got %+v", product)
-	}
+	require.Error(t, err)
+	require.Nil(t, product)
+	assert.ErrorIs(t, err, productRepo.ErrSimulatedFailureRepoProduct)
 }
 
 func TestCreateProduct_ShouldReturnSuccess(t *testing.T) {
@@ -472,74 +421,27 @@ func TestCreateProduct_ShouldReturnSuccess(t *testing.T) {
 		UserId:      "123456",
 		CategoryId:  "123456",
 		Name:        "Produto1",
-		Description: "Meu produto",
+		Description: "Meu Produto",
 		Status:      "ACTIVE",
 		Price:       100,
 	})
 
 	// Assert
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	require.NoError(t, err)
+	require.NotNil(t, product)
 
-	if product == nil {
-		t.Fatalf("expected nil product, got %+v", product)
-	}
+	assert.NotNil(t, product.ID)
+	assert.Equal(t, "123456", product.UserId)
+	assert.Equal(t, "123456", product.CategoryId)
+	assert.Equal(t, "Produto1", product.Name)
+	assert.Equal(t, "Meu Produto", product.Description)
+	assert.Equal(t, "ACTIVE", product.Status)
+	assert.Equal(t, 100, product.Price)
 
-	if product.ID == "" {
-		t.Fatalf("expected ID to be set")
-	}
-
-	if product.UserId == "" {
-		t.Fatalf("expected UserId to be set")
-	}
-
-	if product.UserId != "123456" {
-		t.Fatalf("expected UserId, got %v", product.UserId)
-	}
-
-	if product.CategoryId == "" {
-		t.Fatalf("expected CategoryId to be set")
-	}
-
-	if product.CategoryId != "123456" {
-		t.Fatalf("expected CategoryId, got %v", product.CategoryId)
-	}
-
-	if product.Name != "Produto1" {
-		t.Fatalf("expected Name Produto1, got %v", product.Name)
-	}
-
-	if product.Description != "Meu produto" {
-		t.Fatalf("expected Description Meu produto, got %v", product.Description)
-	}
-
-	if product.Status != "ACTIVE" {
-		t.Fatalf("expected Status ACTIVE, got %v", product.Status)
-	}
-
-	if product.Price != 100 {
-		t.Fatalf("expected Price 100, got %v", product.Price)
-	}
-
-	if product.CreatedAt.IsZero() {
-		t.Errorf("expected CreatedAt to be set")
-	}
-
-	if product.UpdatedAt.IsZero() {
-		t.Errorf("expected UpdatedAt to be set")
-	}
-
-	if !product.CreatedAt.Equal(product.UpdatedAt) {
-		t.Fatalf("expected CreatedAt and UpdatedAt to be equal on creation")
-	}
+	assert.False(t, product.CreatedAt.IsZero())
+	assert.False(t, product.UpdatedAt.IsZero())
 
 	count, err := sut.ProductRepo.Count()
-	if err != nil {
-		t.Fatalf("unexpected error from Count: %v", err)
-	}
-
-	if count != 1 {
-		t.Errorf("expected product to be saved, got %d", count)
-	}
+	require.NoError(t, err)
+	assert.Equal(t, 1, count)
 }
