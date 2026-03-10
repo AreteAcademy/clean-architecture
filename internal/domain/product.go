@@ -55,6 +55,45 @@ func isValidProductStatus(status ProductStatus) bool {
 	return status == ProductStatusActive || status == ProductStatusInactive
 }
 
+func validEntity(
+	userId,
+	categoryId,
+	name,
+	description string,
+	status ProductStatus,
+	price int,
+) error {
+	if userId == "" {
+		return ErrProductUserIdIsRequired
+	}
+
+	if categoryId == "" {
+		return ErrProductCategoryIdIsRequired
+	}
+
+	if name == "" {
+		return ErrProductNameIsRequired
+	}
+
+	if description == "" {
+		return ErrProductDescriptionIsRequired
+	}
+
+	if status == "" {
+		return ErrProductStatusIsRequired
+	}
+
+	if !isValidProductStatus(status) {
+		return ErrProductStatusInvalid
+	}
+
+	if price <= 0 {
+		return ErrProductPriceInvalid
+	}
+
+	return nil
+}
+
 func NewProduct(
 	userId,
 	categoryId,
@@ -63,32 +102,16 @@ func NewProduct(
 	status ProductStatus,
 	price int,
 ) (*Product, error) {
-	if userId == "" {
-		return nil, ErrProductUserIdIsRequired
-	}
-
-	if categoryId == "" {
-		return nil, ErrProductCategoryIdIsRequired
-	}
-
-	if name == "" {
-		return nil, ErrProductNameIsRequired
-	}
-
-	if description == "" {
-		return nil, ErrProductDescriptionIsRequired
-	}
-
-	if status == "" {
-		return nil, ErrProductStatusIsRequired
-	}
-
-	if !isValidProductStatus(status) {
-		return nil, ErrProductStatusInvalid
-	}
-
-	if price <= 0 {
-		return nil, ErrProductPriceInvalid
+	err := validEntity(
+		userId,
+		categoryId,
+		name,
+		description,
+		status,
+		price,
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	now := time.Now()
@@ -104,4 +127,35 @@ func NewProduct(
 		CreatedAt:   now,
 		UpdatedAt:   now,
 	}, nil
+}
+
+func (p *Product) UpdateProduct(
+	categoryId,
+	name,
+	description string,
+	status ProductStatus,
+	price int,
+) error {
+	err := validEntity(
+		p.UserId,
+		categoryId,
+		name,
+		description,
+		status,
+		price,
+	)
+	if err != nil {
+		return err
+	}
+
+	now := time.Now()
+
+	p.CategoryId = categoryId
+	p.Name = name
+	p.Description = description
+	p.Status = string(status)
+	p.Price = price
+	p.UpdatedAt = now
+
+	return nil
 }

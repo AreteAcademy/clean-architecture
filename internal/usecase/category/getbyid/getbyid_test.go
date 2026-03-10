@@ -201,7 +201,7 @@ func TestGetByIdCategory_ShouldReturnAnError_WhenCategoryRepoFailOnGetById(t *te
 		CreatedAt: now,
 		UpdatedAt: now,
 	})
-	sut.CategoryRepo.FailOnGet = true
+	sut.CategoryRepo.FailOnGetById = true
 
 	// Act
 	category, err := sut.UseCase.Perform(GetByIdCategoryInput{

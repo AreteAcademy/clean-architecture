@@ -9,12 +9,13 @@ import (
 var ErrSimulatedFailureRepoCategory = errors.New("database error")
 
 type InMemoryCategoryRepository struct {
-	FailOnSave   bool
-	FailOnUpdate bool
-	FailOnGet    bool
-	FailOnList   bool
-	FailOnCount  bool
-	categories   map[string]*domain.Category
+	FailOnSave             bool
+	FailOnUpdate           bool
+	FailOnGetById          bool
+	FailOnGetByIdAndUserId bool
+	FailOnList             bool
+	FailOnCount            bool
+	categories             map[string]*domain.Category
 }
 
 func NewInMemoryCategoryRepository() *InMemoryCategoryRepository {
@@ -40,7 +41,7 @@ func (r *InMemoryCategoryRepository) Update(category *domain.Category) error {
 }
 
 func (r *InMemoryCategoryRepository) GetById(id string) (*domain.Category, error) {
-	if r.FailOnGet {
+	if r.FailOnGetById {
 		return nil, ErrSimulatedFailureRepoCategory
 	}
 	category, exists := r.categories[id]
@@ -48,6 +49,20 @@ func (r *InMemoryCategoryRepository) GetById(id string) (*domain.Category, error
 		return nil, nil
 	}
 	return category, nil
+}
+
+func (r *InMemoryCategoryRepository) GetByIdAndUserId(id, userId string) (*domain.Category, error) {
+	if r.FailOnGetByIdAndUserId {
+		return nil, ErrSimulatedFailureRepoCategory
+	}
+
+	for _, c := range r.categories {
+		if c.UserId == userId && c.ID == id {
+			return c, nil
+		}
+	}
+
+	return nil, nil
 }
 
 func (r *InMemoryCategoryRepository) ListByUserId(userId string) ([]*domain.Category, error) {

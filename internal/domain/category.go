@@ -38,6 +38,7 @@ type CategoryRepository interface {
 	Save(category *Category) error
 	Update(category *Category) error
 	GetById(id string) (*Category, error)
+	GetByIdAndUserId(id, userId string) (*Category, error)
 	ListByUserId(userId string) ([]*Category, error)
 	Count() (int, error)
 }

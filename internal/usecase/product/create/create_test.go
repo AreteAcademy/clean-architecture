@@ -286,7 +286,7 @@ func TestCreateProduct_ShouldReturnAnError_WhenCategoryRepoFailOnGetById(t *test
 		CreatedAt: now,
 		UpdatedAt: now,
 	})
-	sut.CategoryRepo.FailOnGet = true
+	sut.CategoryRepo.FailOnGetById = true
 
 	// Act
 	product, err := sut.UseCase.Perform(CreateProductInput{
