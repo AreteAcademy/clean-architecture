@@ -2,207 +2,141 @@ package user
 
 import (
 	"testing"
+	"time"
 
 	"github.com/areteacademy/internal/domain"
 	repo "github.com/areteacademy/internal/infra/repository/user"
+	security "github.com/areteacademy/internal/infra/security"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type SUT struct {
 	UseCase CreateUserUseCase
 	Repo    *repo.InMemoryUserRepository
+	User    *domain.User
 }
 
 func makeSut() SUT {
 	repo := repo.NewInMemoryUserRepository()
-	usecase := NewCreateUserUseCase(repo)
+	hash := security.NewBcryptPasswordHasher()
+	usecase := NewCreateUserUseCase(repo, hash)
+
+	now := time.Now()
+
+	user := &domain.User{
+		ID:        "123456",
+		Name:      "Daniel",
+		Email:     "daniel@com.br",
+		Password:  "@Daniel123",
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
 
 	return SUT{
 		UseCase: usecase,
 		Repo:    repo,
+		User:    user,
 	}
 }
 
-func TestCreateUser_ShouldReturnAnErrorIfNameEmpty(t *testing.T) {
-	// Arrange
-	sut := makeSut()
-
-	// Act
-	user, err := sut.UseCase.Perform(&CreateUserInput{
-		Name:     "",
-		Email:    "daniel@gmail.com",
-		Password: "@Daniel123",
-	})
-
-	// Assert
-	if err == nil {
-		t.Fatalf("expected an error, got nil")
-	}
-
-	if err != domain.ErrUserNameIsRequired {
-		t.Errorf("expected ErrUserNameIsRequired, got %v", err)
-	}
-
-	if user != nil {
-		t.Errorf("expected nil user, got %+v", user)
+func validInput(sut SUT) CreateUserInput {
+	return CreateUserInput{
+		Name:     sut.User.Name,
+		Email:    sut.User.Email,
+		Password: sut.User.Password,
 	}
 }
 
-func TestCreateUser_ShouldReturnAnError_WhenIfEmailEmpty(t *testing.T) {
-	// Arrange
-	sut := makeSut()
-
+func TestCreateUser_GivenInvalidInput_ShouldReturnError(t *testing.T) {
 	// Act
-	user, err := sut.UseCase.Perform(&CreateUserInput{
-		Name:     "Daniel",
-		Email:    "",
-		Password: "@Daniel123",
-	})
-
-	// Assert
-	if err == nil {
-		t.Fatalf("expected an error, got nil")
+	testCases := []struct {
+		name        string
+		setup       func(sut SUT)
+		input       func(sut SUT) CreateUserInput
+		expectedErr error
+	}{
+		{
+			name:  "Empty Name",
+			setup: func(sut SUT) {},
+			input: func(sut SUT) CreateUserInput {
+				in := validInput(sut)
+				in.Name = ""
+				return in
+			},
+			expectedErr: domain.ErrUserNameIsRequired,
+		},
+		{
+			name:  "Empty Email",
+			setup: func(sut SUT) {},
+			input: func(sut SUT) CreateUserInput {
+				in := validInput(sut)
+				in.Email = ""
+				return in
+			},
+			expectedErr: domain.ErrUserEmailIsRequired,
+		},
+		{
+			name:  "Invalid Email",
+			setup: func(sut SUT) {},
+			input: func(sut SUT) CreateUserInput {
+				in := validInput(sut)
+				in.Email = "daniel.com.br"
+				return in
+			},
+			expectedErr: domain.ErrUserEmailInvalid,
+		},
+		{
+			name:  "Empty Password",
+			setup: func(sut SUT) {},
+			input: func(sut SUT) CreateUserInput {
+				in := validInput(sut)
+				in.Password = ""
+				return in
+			},
+			expectedErr: domain.ErrUserPasswordIsRequired,
+		},
+		{
+			name:  "Invalid Password",
+			setup: func(sut SUT) {},
+			input: func(sut SUT) CreateUserInput {
+				in := validInput(sut)
+				in.Password = "Daniel123"
+				return in
+			},
+			expectedErr: domain.ErrUserPasswordInvalid,
+		},
+		{
+			name: "Repo User Fail On Save",
+			setup: func(sut SUT) {
+				sut.Repo.FailOnSave = true
+			},
+			input: func(sut SUT) CreateUserInput {
+				in := validInput(sut)
+				return in
+			},
+			expectedErr: repo.ErrSimulatedFailureRepoUser,
+		},
 	}
 
-	if err != domain.ErrUserEmailIsRequired {
-		t.Errorf("expected ErrUserEmailIsRequired, got %v", err)
-	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Arrange
+			sut := makeSut()
 
-	if user != nil {
-		t.Errorf("expected nil user, got %+v", user)
-	}
-}
+			if tc.setup != nil {
+				tc.setup(sut)
+			}
 
-func TestCreateUser_ShouldReturnAnError_WhenIfEmailInvalid(t *testing.T) {
-	// Arrange
-	sut := makeSut()
+			input := tc.input(sut)
 
-	// Act
-	user, err := sut.UseCase.Perform(&CreateUserInput{
-		Name:     "Daniel",
-		Email:    "daniel.com.br",
-		Password: "@Daniel123",
-	})
+			user, err := sut.UseCase.Perform(&input)
 
-	// Assert
-	if err == nil {
-		t.Fatalf("expected an error, got nil")
-	}
-
-	if err != domain.ErrUserEmailInvalid {
-		t.Errorf("expected ErrUserEmailInvalid, got %v", err)
-	}
-
-	if user != nil {
-		t.Errorf("expected nil user, got %+v", user)
-	}
-}
-
-func TestCreateUser_ShouldReturnAnError_WhenIfPasswordEmpty(t *testing.T) {
-	// Arrange
-	sut := makeSut()
-
-	// Act
-	user, err := sut.UseCase.Perform(&CreateUserInput{
-		Name:     "Daniel",
-		Email:    "daniel@gmail.com",
-		Password: "",
-	})
-
-	// Assert
-	if err == nil {
-		t.Fatalf("expected an error, got nil")
-	}
-
-	if err != domain.ErrUserPasswordIsRequired {
-		t.Errorf("expected ErrUserPasswordIsRequired, got %v", err)
-	}
-
-	if user != nil {
-		t.Errorf("expected nil user, got %+v", user)
-	}
-}
-
-func TestCreateUser_ShouldReturnAnError_WhenIfPasswordInvalid(t *testing.T) {
-	// Arrange
-	sut := makeSut()
-
-	// Act
-	user, err := sut.UseCase.Perform(&CreateUserInput{
-		Name:     "Daniel",
-		Email:    "daniel@gmail.com",
-		Password: "Daniel123",
-	})
-
-	// Assert
-	if err == nil {
-		t.Fatalf("expected an error, got nil")
-	}
-
-	if err != domain.ErrUserPasswordInvalid {
-		t.Errorf("expected ErrUserPasswordInvalid, got %v", err)
-	}
-
-	if user != nil {
-		t.Errorf("expected nil user, got %+v", user)
-	}
-}
-
-func TestCreateUser_ShouldReturnSuccess(t *testing.T) {
-	// Arrange
-	sut := makeSut()
-
-	// Act
-	user, err := sut.UseCase.Perform(&CreateUserInput{
-		Name:     "Daniel",
-		Email:    "daniel@gmail.com",
-		Password: "@Danel123",
-	})
-
-	// Assert
-	if err != nil {
-		t.Fatalf("expected an error, got nil")
-	}
-
-	if user == nil {
-		t.Errorf("expected nil user, got %+v", user)
-	}
-
-	if user.Name != "Daniel" || user.Email != "daniel@gmail.com" {
-		t.Errorf("expected nil user return comform, got %+v", user)
-	}
-
-	if user.CreatedAt.IsZero() {
-		t.Fatalf("expected CreatedAt to be set")
-	}
-
-	if user.UpdatedAt.IsZero() {
-		t.Fatalf("expected UpdatedAt to be set")
-	}
-
-	if !user.CreatedAt.Equal(user.UpdatedAt) {
-		t.Fatalf("expected CreatedAt and UpdatedAt to be equal on creation")
-	}
-}
-
-func TestCreateUser_ShouldSaveOnSuccess(t *testing.T) {
-	// Arrange
-	sut := makeSut()
-
-	// Act
-	_, _ = sut.UseCase.Perform(&CreateUserInput{
-		Name:     "Daniel",
-		Email:    "daniel@gmail.com",
-		Password: "@Danel123",
-	})
-
-	// Assert
-	count, err := sut.Repo.Count()
-	if err != nil {
-		t.Fatalf("unexpected error from Count: %v", err)
-	}
-
-	if count != 1 {
-		t.Errorf("expected user to be saved, got %d", count)
+			// Assert
+			require.Error(t, err)
+			require.Nil(t, user)
+			assert.ErrorIs(t, err, tc.expectedErr)
+		})
 	}
 }
 
@@ -219,37 +153,34 @@ func TestCreateUser_shouldReturnAnError_WhenValidationFails(t *testing.T) {
 
 	// Assert
 	count, err := sut.Repo.Count()
-	if err != nil {
-		t.Fatalf("unexpected error from Count: %v", err)
-	}
-
-	if count != 0 {
-		t.Errorf("expected user to be saved, got %d", count)
-	}
+	require.Nil(t, err)
+	require.Equal(t, count, 0)
 }
 
-func TestCreateUser_shouldReturnAnError_WhenRepositoryFails(t *testing.T) {
+func TestCreateUser_shouldReturnSuccess(t *testing.T) {
 	// Arrange
 	sut := makeSut()
-	sut.Repo.FailOnSave = true
 
 	// Act
-	user, err := sut.UseCase.Perform(&CreateUserInput{
-		Name:     "Daniel",
-		Email:    "daniel@gmail.com",
-		Password: "@Danel123",
-	})
+	expected := &CreateUserInput{
+		Name:     sut.User.Name,
+		Email:    sut.User.Email,
+		Password: sut.User.Password,
+	}
+	user, err := sut.UseCase.Perform(expected)
 
 	// Assert
-	if err == nil {
-		t.Fatalf("expected an error, not nil")
-	}
+	require.Nil(t, err)
+	require.NotNil(t, user)
 
-	if err != repo.ErrSimulatedFailureRepoUser {
-		t.Errorf("expected repository erro, got %v", err)
-	}
+	assert.NotNil(t, user.ID)
 
-	if user != nil {
-		t.Errorf("expected nil user, got %+v", user)
-	}
+	assert.Equal(t, expected.Name, user.Name)
+	assert.Equal(t, expected.Email, user.Email)
+
+	assert.False(t, user.CreatedAt.IsZero())
+	assert.False(t, user.UpdatedAt.IsZero())
+
+	count, err := sut.Repo.Count()
+	assert.Equal(t, count, 1)
 }

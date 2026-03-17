@@ -70,6 +70,7 @@ func makeSut() SUT {
 func validInput(sut SUT) UpdateProductInput {
 	return UpdateProductInput{
 		ID:          sut.Product.ID,
+		UserId:      sut.User.ID,
 		CategoryId:  sut.Product.CategoryId,
 		Name:        sut.Product.Name,
 		Description: sut.Product.Description,
@@ -92,6 +93,30 @@ func TestUpdateProduct_GivenInvalidInput_ShouldReturnError(t *testing.T) {
 		input       func(sut SUT) UpdateProductInput
 		expectedErr error
 	}{
+		{
+			name: "Empty ID",
+			setup: func(sut SUT) {
+				seedDefaultData(sut)
+			},
+			input: func(sut SUT) UpdateProductInput {
+				in := validInput(sut)
+				in.ID = ""
+				return in
+			},
+			expectedErr: domain.ErrProductIdIsRequired,
+		},
+		{
+			name: "Empty User ID",
+			setup: func(sut SUT) {
+				seedDefaultData(sut)
+			},
+			input: func(sut SUT) UpdateProductInput {
+				in := validInput(sut)
+				in.UserId = ""
+				return in
+			},
+			expectedErr: domain.ErrProductUserIdIsRequired,
+		},
 		{
 			name: "Empty Category ID",
 			setup: func(sut SUT) {
@@ -189,28 +214,16 @@ func TestUpdateProduct_GivenInvalidInput_ShouldReturnError(t *testing.T) {
 			expectedErr: domain.ErrProductNotFound,
 		},
 		{
-			name: "Repo Product Fail On GetById",
+			name: "Repo Product Fail On GetByIdAndUserId",
 			setup: func(sut SUT) {
 				seedDefaultData(sut)
-				sut.ProductRepo.FailOnGetById = true
+				sut.ProductRepo.FailOnGetByIdAndUserId = true
 			},
 			input: func(sut SUT) UpdateProductInput {
 				in := validInput(sut)
 				return in
 			},
 			expectedErr: productRepo.ErrSimulatedFailureRepoProduct,
-		},
-		{
-			name: "User Not Found",
-			setup: func(sut SUT) {
-				seedDefaultData(sut)
-			},
-			input: func(sut SUT) UpdateProductInput {
-				in := validInput(sut)
-				sut.Product.UserId = "1234567"
-				return in
-			},
-			expectedErr: domain.ErrProductUserNotFound,
 		},
 		{
 			name: "Repo User Fail On GetById",
@@ -290,6 +303,7 @@ func TestUpdateProduct_ShouldReturnSuccess(t *testing.T) {
 
 	expected := UpdateProductInput{
 		ID:          sut.Product.ID,
+		UserId:      sut.User.ID,
 		CategoryId:  sut.Product.CategoryId,
 		Name:        "Produto editado",
 		Description: "Descrição editado",

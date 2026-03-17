@@ -33,6 +33,10 @@ type UserRepository interface {
 	Count() (int, error)
 }
 
+type UserPasswordHasher interface {
+	Hash(password string) (string, error)
+}
+
 func NewUser(name, email, password string) (*User, error) {
 	if name == "" {
 		return nil, ErrUserNameIsRequired

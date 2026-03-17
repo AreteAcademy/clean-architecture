@@ -1,8 +1,32 @@
 package product
 
 import (
+	"time"
+
 	"github.com/areteacademy/internal/domain"
 )
+
+type UpdateProductInput struct {
+	ID          string
+	UserId      string
+	CategoryId  string
+	Name        string
+	Description string
+	Status      string
+	Price       int
+}
+
+type UpdateProductOutput struct {
+	ID          string
+	UserId      string
+	CategoryId  string
+	Name        string
+	Description string
+	Status      string
+	Price       int
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
 
 type updateProductUseCase struct {
 	productRepo  domain.ProductRepository
@@ -27,7 +51,15 @@ func NewUpdateProductUseCase(
 }
 
 func (uc *updateProductUseCase) Perform(input UpdateProductInput) (*UpdateProductOutput, error) {
-	product, err := uc.productRepo.GetById(input.ID)
+	if input.ID == "" {
+		return nil, domain.ErrProductIdIsRequired
+	}
+
+	if input.UserId == "" {
+		return nil, domain.ErrProductUserIdIsRequired
+	}
+
+	product, err := uc.productRepo.GetByIdAndUserId(input.ID, input.UserId)
 	if err != nil {
 		return nil, err
 	}
