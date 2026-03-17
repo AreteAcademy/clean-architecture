@@ -22,7 +22,7 @@ func (r *GormUserRepository) Save(user *domain.User) error {
 		return ErrRepoUserIsNil
 	}
 
-	model := ToRepostory(user)
+	model := ToRepository(user)
 
 	if err := r.db.Create(model).Error; err != nil {
 		return err
@@ -36,7 +36,7 @@ func (r *GormUserRepository) Update(user *domain.User) error {
 		return ErrRepoUserIsNil
 	}
 
-	model := ToRepostory(user)
+	model := ToRepository(user)
 
 	result := r.db.
 		Model(&UserGorm{}).

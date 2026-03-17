@@ -30,7 +30,7 @@ func (u *UserGorm) ToDomain() *domain.User {
 	}
 }
 
-func ToRepostory(u *domain.User) *UserGorm {
+func ToRepository(u *domain.User) *UserGorm {
 	return &UserGorm{
 		ID:           u.ID,
 		Name:         u.Name,
