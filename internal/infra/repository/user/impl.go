@@ -60,7 +60,7 @@ func (r *GormUserRepository) GetById(id string) (*domain.User, error) {
 	err := r.db.First(&model, "id = ?", id).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+			return nil, domain.ErrUserNotFound
 		}
 		return nil, err
 	}
