@@ -93,7 +93,7 @@ func TestCategoryRepository_Update_ShouldUpdateCategory(t *testing.T) {
 	assert.Equal(t, expected.Status, getCategory.Status)
 }
 
-func TestCategoryRepository_Update_ShoukdReturnError_WhenCategoryNotFond(t *testing.T) {
+func TestCategoryRepository_Update_ShouldReturnError_WhenCategoryNotFond(t *testing.T) {
 	sut := makeSut(t)
 
 	require.NoError(t, sut.Repository.Save(sut.Category))
